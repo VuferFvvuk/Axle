@@ -220,17 +220,25 @@ class AxlesInTheBridge:
         :return: list
         """
         temp = list()
-        temp.append([way + int(len_bridge / 2),
-                     abs(abs(way) * self.angle - len_bridge / 4) / 100,
-                     self.get_load(abs((abs(way)) * self.angle - len_bridge / 4))])
+        temp.append(
+            [
+                way + int(len_bridge / 2),
+                abs(abs(way) * self.angle - len_bridge / 4) / 100,
+                self.get_load(abs((abs(way)) * self.angle - len_bridge / 4))
+            ]
+        )
         return temp
 
     def distance_traveled_prop(self, len_bridge: int, way: int):
         #
         temp = list()
-        temp.append([way,
-                     round(tan(1 / len_bridge) * way, 3),
-                     self.get_load(tan(1 / len_bridge) * way)])  # установить значение угла
+        temp.append(
+            [
+                way,
+                round(way / len_bridge, 3),
+                self.get_load(way / len_bridge)
+            ]
+        )  # установить значение угла
         return temp
 
 
