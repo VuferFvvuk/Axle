@@ -1,5 +1,5 @@
 from typing import Any
-from math import tan
+# from math import tan
 
 
 class MachineWithAxles:
@@ -118,14 +118,14 @@ class MachineWithAxles:
         temp_travel = list()
         if args:
             #
-            prop = (args[0] + args[1]) / 2
-            for way in range(1, int(self.len_way) + 1, 1):  # step 1
+            prop = int(args[0] + args[1] / 2)
+            for way in range(int((-1) * self.len_bridge / 2), int(self.len_bridge / 2) + 1, 1):  # step 1
                 temp_list = list()
                 for axle in self.axle_in_car:
-                    if way - axle.axle in range(int(self.len_way - prop) + 1):
+                    if way - axle.axle in range(self.len_way - prop):
                         temp_list.append(*axle.distance_traveled_prop(self.len_way, way - axle.axle))
                     else:
-                        temp_list.append([int(way - axle.axle + self.len_way / 2), 0, 0])
+                        temp_list.append([0, 0, 0])  # исправить
 
                 temp_travel.append(temp_list)
         else:
@@ -235,7 +235,7 @@ class AxlesInTheBridge:
         temp.append(
             [
                 way,
-                round(way / len_bridge, 3),
+                round(way / len_bridge / 100, 3),
                 self.get_load(way / len_bridge)
             ]
         )  # установить значение угла
