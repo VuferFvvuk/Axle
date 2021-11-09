@@ -1,4 +1,6 @@
 from typing import Any
+
+
 # from math import tan
 
 
@@ -8,13 +10,13 @@ class MachineWithAxles:
 
     """
 
-    def __init__(self, len_bridge: int, axle_list: list, load_list: list) -> None:
+    def __init__(self, len_bridge: int, axle_list: list, load_list: list, *args_prop) -> None:
         self.axle_in_car = [AxlesInTheBridge(num + 1, x_axle) for num, x_axle in
                             enumerate(zip(axle_list, load_list))]
         self.len_way = len_bridge
         self.len_bridge = len_bridge + max(self.axle_in_car).axle * 2
         self.distance_bridge = self.set_list_travel()
-        self.distance_prop = self.set_list_travel(100, 150)
+        self.distance_prop = self.set_list_travel(args_prop[0], args_prop[1])
 
     def __str__(self) -> str:
         """
@@ -24,29 +26,35 @@ class MachineWithAxles:
 #
         :return: str
         """
+        return "{}{}".format(self.str_bridge(), self.str_prop())
+
+    def str_bridge(self):
         temp_bridge = self.sum_load(self.distance_bridge)
-        temp_prop = self.sum_load(self.distance_prop)
         coordinate_bridge = [x[0] for x in temp_bridge[0]]
         point_load_bridge = [x[1] for x in temp_bridge[0]]
         axles_load_bridge = [x[2] for x in temp_bridge[0]]
-        coordinate_prop = [x[0] for x in temp_prop[0]]
-        point_load_prop = [x[1] for x in temp_prop[0]]
-        axles_load_prop = [x[2] for x in temp_prop[0]]
-        return 'Нагрузка на мост:\n' \
+        return '\nНагрузка на мост:\n' \
                'Координаты осей - {coordinates_b},\n' \
                'нагрузки моста в этих точках - {point_load_b},\n' \
                'нагрузка осей в данных координатах - {axles_load_b},\n' \
-               'наибольшая сумма нагрузок осей на мост - {sum_loads_b}\n' \
-               '\nНагрузка на опоры:\n' \
+               'наибольшая сумма нагрузок осей на мост - {sum_loads_b}\n'. \
+            format(coordinates_b=coordinate_bridge,
+                   point_load_b=point_load_bridge,
+                   axles_load_b=axles_load_bridge,
+                   sum_loads_b=temp_bridge[1]
+                   )
+
+    def str_prop(self):
+        temp_prop = self.sum_load(self.distance_prop)
+        coordinate_prop = [x[0] for x in temp_prop[0]]
+        point_load_prop = [x[1] for x in temp_prop[0]]
+        axles_load_prop = [x[2] for x in temp_prop[0]]
+        return '\nНагрузка на опоры:\n' \
                'Координаты осей - {coordinates_p},\n' \
                'нагрузки моста в этих точках - {point_load_p},\n' \
                'нагрузка осей в данных координатах - {axles_load_p},\n' \
                'наибольшая сумма нагрузок осей на мост - {sum_loads_p}\n'. \
-            format(coordinates_b=coordinate_bridge,
-                   point_load_b=point_load_bridge,
-                   axles_load_b=axles_load_bridge,
-                   sum_loads_b=temp_bridge[1],
-                   coordinates_p=coordinate_prop,
+            format(coordinates_p=coordinate_prop,
                    point_load_p=point_load_prop,
                    axles_load_p=axles_load_prop,
                    sum_loads_p=temp_prop[1],
@@ -59,7 +67,7 @@ class MachineWithAxles:
         координаты нахождения осей,
         и произведение нагрузок моста и давления осей на точки координат
 
-        :return: None
+        :return:
         """
         count = 0
         self.display_car()
@@ -118,11 +126,11 @@ class MachineWithAxles:
         temp_travel = list()
         if args:
             #
-            prop = int(args[0] + args[1] / 2)
+            prop = int((args[0] + args[1]) / 2)
             for way in range(int((-1) * self.len_bridge / 2), int(self.len_bridge / 2) + 1, 1):  # step 1
                 temp_list = list()
                 for axle in self.axle_in_car:
-                    if way - axle.axle in range(self.len_way - prop):
+                    if way - axle.axle in range(self.len_way - prop + 1):
                         temp_list.append(*axle.distance_traveled_prop(self.len_way, way - axle.axle))
                     else:
                         temp_list.append([0, 0, 0])  # исправить
@@ -202,14 +210,14 @@ class AxlesInTheBridge:
         """
         return self.axle > other.axle
 
-    def get_load(self, way: float) -> float:
+    def get_load(self, ordinate: float) -> float:
         """
         Возвращает нагрузку оси на заданную точку моста
 
         :param way: int
         :return: float
         """
-        return round(way * self.load / 100, 3)
+        return round(ordinate * self.load / 100, 3)
 
     def distance_traveled(self, len_bridge: int, way: int) -> list[Any]:
         """
@@ -235,7 +243,7 @@ class AxlesInTheBridge:
         temp.append(
             [
                 way,
-                round(way / len_bridge / 100, 3),
+                round(way / len_bridge, 3),
                 self.get_load(way / len_bridge)
             ]
         )  # установить значение угла
@@ -243,11 +251,11 @@ class AxlesInTheBridge:
 
 
 if __name__ == "__main__":
-    car_axle_list = [0, 175, 405, 585, 795, 970, 1150, 1325]  # расстояния между осями
-    car_load_list = [15.35, 15.35, 15.35, 15.35, 15.35, 15.35, 15.35, 15.35]
-    # car_axle_list = [0, 175, 405, ]  # расстояния между осями
-    # car_load_list = [15.35, 15.35, 15.35]
-    car = MachineWithAxles(1050, car_axle_list, car_load_list)
+    # car_axle_list = [0, 175, 405, 585, 795, 970, 1150, 1325]  # расстояния между осями
+    # car_load_list = [15.35, 15.35, 15.35, 15.35, 15.35, 15.35, 15.35, 15.35]
+    car_axle_list = [0 ]  # расстояния между осями
+    car_load_list = [15.35]
+    car = MachineWithAxles(1050, car_axle_list, car_load_list, 100, 150)
     # car.display_info_load_bridge()
     # print()
     # car.display_load_all_axles()
